@@ -1,4 +1,9 @@
+using Aspire.Hosting.Docker;
+
 var builder = DistributedApplication.CreateBuilder(args);
+
+// Add Docker Compose publisher
+builder.AddDockerComposePublisher();
 
 var cache = builder.AddRedis("cache");
 
