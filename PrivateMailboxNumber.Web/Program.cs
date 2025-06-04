@@ -11,6 +11,11 @@ builder.AddRedisOutputCache("cache");
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpClient<MailboxApiClient>(client =>
+    {
+        client.BaseAddress = new("https+http://apiservice");
+    });
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

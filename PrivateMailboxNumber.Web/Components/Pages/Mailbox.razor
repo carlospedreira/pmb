@@ -1,0 +1,218 @@
+@page "/"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using PrivateMailboxNumber.Web
+
+@inject MailboxApiClient MailboxApi
+
+<PageTitle>Mailbox Number Management</PageTitle>
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-3">Mailbox Number Management</h1>
+            <p class="lead text-muted">Assign and look up mailbox numbers for your locations.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title h4 mb-4">Assign Mailbox Number</h2>
+                    
+                    <form @onsubmit="HandleAssignSubmit" @onsubmit:preventDefault>
+                        <div class="mb-3">
+                            <label for="locationNumber" class="form-label">Location Number</label>
+                            <input type="text" 
+                                   class="form-control @(string.IsNullOrEmpty(assignModel.LocationNumber) && isAssignSubmitted ? "is-invalid" : "")" 
+                                   id="locationNumber" 
+                                   @bind="assignModel.LocationNumber" 
+                                   @bind:event="oninput" />
+                            @if (string.IsNullOrEmpty(assignModel.LocationNumber) && isAssignSubmitted)
+                            {
+                                <div class="invalid-feedback">Location Number is required</div>
+                            }
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="financialAccountId" class="form-label">Financial Account ID</label>
+                            <input type="text" 
+                                   class="form-control @(string.IsNullOrEmpty(assignModel.FinancialAccountId) && isAssignSubmitted ? "is-invalid" : "")" 
+                                   id="financialAccountId" 
+                                   @bind="assignModel.FinancialAccountId" 
+                                   @bind:event="oninput" />
+                            @if (string.IsNullOrEmpty(assignModel.FinancialAccountId) && isAssignSubmitted)
+                            {
+                                <div class="invalid-feedback">Financial Account ID is required</div>
+                            }
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Get Mailbox Number</button>
+                    </form>
+
+                    @if (assignedMailboxNumber.HasValue)
+                    {
+                        <div class="alert alert-success mt-3">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Assigned Mailbox Number: <strong>@assignedMailboxNumber</strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(assignError))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            We couldn't assign a mailbox number with the provided information.
+                        </div>
+                    }
+                    @*@if (!string.IsNullOrEmpty(assignApiResponse))
+                    {
+                        <div class="mt-3">
+                            <h6 class="text-muted mb-2">API Response:</h6>
+                            <pre class="bg-light p-3 rounded"><code>@assignApiResponse</code></pre>
+                        </div>
+                    }*@
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title h4 mb-4">Look Up Financial Account</h2>
+                    
+                    <form @onsubmit="HandleLookupSubmit" @onsubmit:preventDefault>
+                        <div class="mb-3">
+                            <label for="lookupLocationNumber" class="form-label">Location Number</label>
+                            <input type="text" 
+                                   class="form-control @(string.IsNullOrEmpty(lookupModel.LocationNumber) && isLookupSubmitted ? "is-invalid" : "")" 
+                                   id="lookupLocationNumber" 
+                                   @bind="lookupModel.LocationNumber" 
+                                   @bind:event="oninput" />
+                            @if (string.IsNullOrEmpty(lookupModel.LocationNumber) && isLookupSubmitted)
+                            {
+                                <div class="invalid-feedback">Location Number is required</div>
+                            }
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mailboxNumber" class="form-label">Mailbox Number</label>
+                            <input type="number" 
+                                   class="form-control @(!lookupModel.MailboxNumber.HasValue && isLookupSubmitted ? "is-invalid" : "")" 
+                                   id="mailboxNumber" 
+                                   @bind="lookupModel.MailboxNumber" 
+                                   @bind:event="oninput" />
+                            @if (!lookupModel.MailboxNumber.HasValue && isLookupSubmitted)
+                            {
+                                <div class="invalid-feedback">Mailbox Number is required and must be greater than 0</div>
+                            }
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Look Up Account</button>
+                    </form>
+
+                    @if (!string.IsNullOrEmpty(lookupResult))
+                    {
+                        <div class="alert alert-success mt-3">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Financial Account ID: <strong>@lookupResult</strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(lookupError))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            We couldn't find an account with the provided information.
+                        </div>
+                    }
+                    @*@if (!string.IsNullOrEmpty(lookupApiResponse))
+                    {
+                        <div class="mt-3">
+                            <h6 class="text-muted mb-2">API Response:</h6>
+                            <pre class="bg-light p-3 rounded"><code>@lookupApiResponse</code></pre>
+                        </div>
+                    }*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AssignMailboxModel assignModel = new();
+    private LookupAccountModel lookupModel = new();
+    private int? assignedMailboxNumber;
+    private string? assignError;
+    private string? assignApiResponse;
+    private string? lookupResult;
+    private string? lookupError;
+    private string? lookupApiResponse;
+    private bool isAssignSubmitted;
+    private bool isLookupSubmitted;
+
+    private async Task HandleAssignSubmit()
+    {
+        isAssignSubmitted = true;
+        assignedMailboxNumber = null;
+        assignError = null;
+        assignApiResponse = null;
+
+        if (string.IsNullOrEmpty(assignModel.LocationNumber) || string.IsNullOrEmpty(assignModel.FinancialAccountId))
+        {
+            return;
+        }
+
+        try
+        {
+            var response = await MailboxApi.GetMailboxNumberAsync(
+                assignModel.LocationNumber,
+                assignModel.FinancialAccountId);
+            
+            assignedMailboxNumber = response.Value;
+            assignApiResponse = $"Request URL: {response.RequestUrl}\n\nStatus Code: {response.StatusCode}\n\nResponse Body:\n{response.ResponseBody}";
+        }
+        catch (Exception ex)
+        {
+            assignError = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task HandleLookupSubmit()
+    {
+        isLookupSubmitted = true;
+        lookupResult = null;
+        lookupError = null;
+        lookupApiResponse = null;
+
+        if (string.IsNullOrEmpty(lookupModel.LocationNumber) || !lookupModel.MailboxNumber.HasValue || lookupModel.MailboxNumber.Value <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var response = await MailboxApi.GetAccountIdAsync(
+                lookupModel.LocationNumber,
+                lookupModel.MailboxNumber.Value);
+            
+            lookupResult = response.Value;
+            lookupApiResponse = $"Request URL: {response.RequestUrl}\n\nStatus Code: {response.StatusCode}\n\nResponse Body:\n{response.ResponseBody}";
+        }
+        catch (Exception ex)
+        {
+            lookupError = $"Error: {ex.Message}";
+        }
+    }
+
+    private class AssignMailboxModel
+    {
+        public string LocationNumber { get; set; } = string.Empty;
+        public string FinancialAccountId { get; set; } = string.Empty;
+    }
+
+    private class LookupAccountModel
+    {
+        public string LocationNumber { get; set; } = string.Empty;
+        public int? MailboxNumber { get; set; }
+    }
+} 
