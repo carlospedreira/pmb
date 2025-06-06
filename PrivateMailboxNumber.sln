@@ -2,13 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36202.13 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.AppHost", "PrivateMailboxNumber.AppHost\PrivateMailboxNumber.AppHost.csproj", "{90ABC1F0-56CC-4383-9575-92BBFCD8DC28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.AppHost", "src\PrivateMailboxNumber.AppHost\PrivateMailboxNumber.AppHost.csproj", "{90ABC1F0-56CC-4383-9575-92BBFCD8DC28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.ServiceDefaults", "PrivateMailboxNumber.ServiceDefaults\PrivateMailboxNumber.ServiceDefaults.csproj", "{D390327A-DB8C-A525-F342-0900576CFCF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.ServiceDefaults", "src\PrivateMailboxNumber.ServiceDefaults\PrivateMailboxNumber.ServiceDefaults.csproj", "{D390327A-DB8C-A525-F342-0900576CFCF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.ApiService", "PrivateMailboxNumber.ApiService\PrivateMailboxNumber.ApiService.csproj", "{1D0A6502-A80E-7150-05E1-209CF8C2509A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.ApiService", "src\PrivateMailboxNumber.ApiService\PrivateMailboxNumber.ApiService.csproj", "{1D0A6502-A80E-7150-05E1-209CF8C2509A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.Web", "PrivateMailboxNumber.Web\PrivateMailboxNumber.Web.csproj", "{A65F9477-7959-A8A6-758E-51B976FADC0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateMailboxNumber.Web", "src\PrivateMailboxNumber.Web\PrivateMailboxNumber.Web.csproj", "{A65F9477-7959-A8A6-758E-51B976FADC0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
